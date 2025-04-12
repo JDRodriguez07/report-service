@@ -1,0 +1,51 @@
+version: '3.7'
+services:
+  db:
+    build: 
+      context: ./MySQL
+      dockerfile: Dockerfile
+    container_name: mysql_db_report
+    restart: always
+    ports:
+      - 4700:3306
+    volumes:
+      - ./Config/mysql:/var/lib/mysql
+    hostname: apps_database
+    networks:
+      - report_network
+    healthcheck:
+        test: ["CMD","mysql", "-u", "root", "-proot123*"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+# --------------------------------------------------------------------
+  # - The adminer is a tool for managing content in databases.
+  adminer:
+    image: adminer
+    container_name: adminer_report
+    restart: always
+    ports:
+      - 8005:8080
+    networks:
+      - report_network
+# --------------------------------------------------------------------
+
+  backend:
+    build: 
+      context: ./backend_report
+      dockerfile: Dockerfile
+    container_name: backend_report
+    restart: always
+    ports:
+      - 8010:80
+    depends_on:
+       db: 
+         condition: service_healthy
+    networks:
+      - report_network
+
+
+networks:
+  course_network:
+      driver: bridge
+      name: report_network
