@@ -1,4 +1,3 @@
-version: '3.7'
 services:
   db:
     build: 
@@ -46,6 +45,6 @@ services:
 
 
 networks:
-  course_network:
+  report_network:
       driver: bridge
       name: report_network
